@@ -10,6 +10,7 @@ import ScrollContainer from "react-indiana-drag-scroll";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [searchType, setSearchType] = useState("title");
   const [favourites, setFavourites] = useState(
     JSON.parse(localStorage.getItem("favourites")) || [],
   );
@@ -40,8 +41,12 @@ export default function App() {
   };
 
   const getMovieRequest = async (searchValue) => {
-    const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=2302757e`;
-    //const aaa = `https://www.omdbapi.com/?apikey=e308995&y=${search}`;
+    let url = "";
+    if (searchType === "title") {
+      const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=2302757e`;
+    } else if (searchType === "year") {
+      url = `http://www.omdbapi.com/?s=movie&y=${searchValue}&apikey=2302757e`;
+    }
     const response = await fetch(url);
     //console.log(response); //서버로 요청후 http 통신으로 받는 데이터
     const data = await response.json(); //자바스크립트 객체로 변환
@@ -50,14 +55,38 @@ export default function App() {
 
   //getMovieRequest(); //리렌더링 될때마다 실행됨
   useEffect(() => {
+    if (searchValue.length >= 2) {
+      // 연도는 4자리이므로 기준을 조금 낮추거나 맞춰 조절
+      getMovieRequest(searchValue);
+    }
+  }, [searchValue, searchType]);
+
+  return (
+    <div className="container-fluid movie-app">
+      <div className="row align-items-center my-4">
+        <MovieListHeading heading="영화 검색" />
+        <SearchBox
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          searchType={searchType}
+          setSearchType={setSearchType}
+        />
+      </div>
+      {/*       
+  useEffect(() => {
     if (searchValue.length > 3) getMovieRequest(searchValue);
   }, [searchValue]); //검색어가 바뀔때마다 요청
   return (
     <div className="container-fluid movie-app">
       <div className="row align-items-center my-4">
         <MovieListHeading heading="영화 검색" />
-        <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
-      </div>
+        <SearchBox
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          searchType={searchType}
+          setSearchType={setSearchType}
+        />
+      </div> */}
 
       <MovieListHeading
         heading={`'${searchValue}' 검색결과 : ${movies.length}개`}
