@@ -56,7 +56,6 @@ export default function App() {
   //getMovieRequest(); //리렌더링 될때마다 실행됨
   useEffect(() => {
     if (searchValue.length >= 2) {
-      // 연도는 4자리이므로 기준을 조금 낮추거나 맞춰 조절
       getMovieRequest(searchValue);
     }
   }, [searchValue, searchType]);
